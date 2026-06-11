@@ -10,7 +10,10 @@ Przeszkoda::Przeszkoda(float startX, float startY, float predkoscX, float obrot)
 }
 
 void Przeszkoda::aktualizuj(float dt) {
+    //WYMÓG 10: wykorzystanie prędkości liniowej w pikselach/sekundę(mnożenie wektora przez dt)
     shape.move(predkosc * dt);
+    //WYMÓG 10: wykorzystanie kątów i rotacji w mechanice(obrót obiektu)
+    //WYMÓG 7: zastosowanie prostej animacji proceduralnej(ciągły ruch obrotowy przeszkody)
     shape.rotate(predkoscObrotowa * dt);
 }
 void Przeszkoda::rysuj(sf::RenderWindow& win) { win.draw(shape); }
