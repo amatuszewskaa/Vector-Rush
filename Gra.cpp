@@ -12,9 +12,10 @@ Gra::Gra() : window(sf::VideoMode(800, 600), L"Vector Rush"), punkty(0), poziom(
 
     auto gracz = std::make_unique<Gracz>();
     graczPtr = gracz.get();
+    //WYMÓG 5 i 11: zapisanie obiektu do wspólnego wektora(inteligentne wskażniki unique_ptr)
     obiekty.push_back(std::move(gracz));
 
-    if (!font.loadFromFile("C:\\Windows\\Fonts\\arial.ttf")) {
+    if (!font.loadFromFile("arial.ttf")) {
         std::cerr << "Nie udalo sie zaladowac czcionki\n";
     }
 
@@ -29,6 +30,7 @@ Gra::Gra() : window(sf::VideoMode(800, 600), L"Vector Rush"), punkty(0), poziom(
 void Gra::uruchom() {
     sf::Clock clock;
     while (window.isOpen()) {
+        //WYMÓG 10: wykorzystanie czasu do ruchu(delta time)
         float dt = clock.restart().asSeconds();
 
         sf::Event event;
@@ -48,6 +50,7 @@ void Gra::uruchom() {
                 timerPunktow = 0;
                 if (punkty > 0 && punkty % 50 == 0) {
                     poziom++;
+                    //WYMÓG 15: parametryzacja-dynamiczna zmiana trudności na podstawie poziomu 
                     paramIloscPrzeszkod++;
                 }
             }
@@ -57,6 +60,7 @@ void Gra::uruchom() {
             zapiszWynik();
         }
 
+        //WYMÓG 4 i 5: polimorficzne wywołanie funkcji aktualizuj dla wszystkich obiektów
         for (auto& obj : obiekty) {
             obj->aktualizuj(dt);
         }
@@ -83,10 +87,12 @@ void Gra::spawnPrzeciwnikow(float dt) {
     if (timerSpawnu > czestotliwosc) {
         timerSpawnu = 0;
 
+        //WYMÓG 14: losowość pojawiania się przeszkód na ekranie
         for (int i = 0; i < paramIloscPrzeszkod % 5 + 1; i++) {
             float startY = 50.f + std::rand() % 500;
             float predkoscX = -100.f - (std::rand() % 150) - (poziom * 20.f);
             float obrot = (std::rand() % 180) - 90.f;
+            //WYMÓG 11: zastosowanie fabryki/inteligentnych wskaźników(make_unique)
             obiekty.push_back(std::make_unique<Przeszkoda>(850.f, startY, predkoscX, obrot));
         }
 
@@ -104,6 +110,7 @@ void Gra::sprawdzKolizje() {
     for (auto& obj : obiekty) {
         if (obj.get() == graczPtr) continue;
 
+        //WYMOG 11: zastosowanie rzutowania w dół(dynamic_cast) do preyzyjnej obsługi kolizji
         if (Przeszkoda* p = dynamic_cast<Przeszkoda*>(obj.get())) {
             if (rGracza.intersects(p->pobierzGranice())) {
                 graczPtr->otrzymajObrazenia(20);
@@ -122,6 +129,7 @@ void Gra::sprawdzKolizje() {
 }
 
 void Gra::wyczyscObiekty() {
+    //WYMÓG 17: użycie algorytmów STL(std::remove_if) do zarządzania pamięcią
     obiekty.erase(std::remove_if(obiekty.begin(), obiekty.end(),
         [](const std::unique_ptr<Obiekt>& obj) { return obj->czyUsunac(); }),
         obiekty.end());
@@ -152,6 +160,7 @@ void Gra::aktualizujHUD() {
 
 void Gra::zapiszStan() {
     if (!graczPtr || graczPtr->getHp() <= 0) return;
+    //WYMÓG 12: zapis/odczyt stanu gry do pliku tekstowego 
     std::ofstream plik("stan_gry.txt");
     if (plik.is_open()) {
         plik << punkty << " " << poziom << " " << paramIloscPrzeszkod << "\n";
@@ -176,6 +185,7 @@ void Gra::wczytajStan() {
 void Gra::zapiszWynik() {
     if (punkty > maxWynik) {
         maxWynik = punkty;
+        //WYMÓG 13: tablica wyników(HighScore) obsługiwana przez pliki
         std::ofstream plik("wyniki.txt");
         if (plik.is_open()) {
             plik << maxWynik;
