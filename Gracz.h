@@ -1,7 +1,9 @@
 #pragma once
 #include "Obiekt.h"
 
+//WYMÓG 3: zastosowanie dziedziczenia
 class Gracz : public Obiekt {
+//WYMÓG 9: podział klas na pola private,public
 private:
     sf::CircleShape shape;
     sf::Vector2f pozycja;
@@ -14,7 +16,8 @@ private:
 public:
     Gracz();
 
-    void aktualizuj(float dt) override;
+//WYMÓG 4: zasosowanie polimorfizmu(nadpisywanie metod wirtualnych)   
+void aktualizuj(float dt) override;
     void rysuj(sf::RenderWindow& win) override;
     sf::FloatRect pobierzGranice() const override;
     bool czyUsunac() const override;
