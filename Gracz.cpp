@@ -15,18 +15,22 @@ void Gracz::aktualizuj(float dt) {
 
     if (czasNiewrazliwosci > 0) {
         czasNiewrazliwosci -= dt;
+        //WYMÓG 7: zastosowanie animacji(mruganie gracza po trafieniu w przeszkodę)
+        //WYMÓG 11: zastosowanie rzutowania typów(static_cast)
         if (static_cast<int>(czasNiewrazliwosci * 10) % 2 == 0)
             shape.setFillColor(sf::Color::Red);
         else
             shape.setFillColor(sf::Color(0, 255, 255, 128));
     }
     else {
+        //WYMÓG 18: kreatywne rozwiązanie-pulsowanie gracza oparte na czasie gry)
         float radius = 20.f + std::sin(czasGry * 5.f) * 2.f;
         shape.setRadius(radius);
         shape.setOrigin(radius, radius);
         shape.setFillColor(sf::Color::Cyan);
     }
 
+    //fizyka ruchu
     sf::Vector2f przyspieszenie(0.f, 0.f);
     float sila = 2000.f;
 
@@ -35,10 +39,12 @@ void Gracz::aktualizuj(float dt) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) przyspieszenie.y -= sila;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) przyspieszenie.y += sila;
 
+    //WYMÓG 10: wykorzystanie prędkości liniowej w pikselach/sekundę(ruch i tarcie)
     predkosc += przyspieszenie * dt;
     predkosc *= 0.95f;
     pozycja += predkosc * dt;
 
+    //odbijanie od krawędzi(kreatywne rozwiązanie-utrata pędu)
     if (pozycja.x < 20.f) { pozycja.x = 20.f; predkosc.x *= -0.5f; }
     if (pozycja.x > 780.f) { pozycja.x = 780.f; predkosc.x *= -0.5f; }
     if (pozycja.y < 20.f) { pozycja.y = 20.f; predkosc.y *= -0.5f; }
@@ -55,6 +61,7 @@ void Gracz::otrzymajObrazenia(int dmg) {
     if (czasNiewrazliwosci <= 0) {
         hp -= dmg;
         czasNiewrazliwosci = 1.0f;
+        //odrzut gracza przy trafieniu
         predkosc.x -= 600.f;
     }
 }
