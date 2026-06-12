@@ -5,10 +5,10 @@ project(VectorRush)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Szukanie biblioteki SFML
+
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 
-# Lista wszystkich Twoich plików źródłowych z kodem
+
 add_executable(${PROJECT_NAME}
     PROJEKT.cpp
     Gra.cpp
@@ -18,5 +18,5 @@ add_executable(${PROJECT_NAME}
     Czasteczka.cpp
 )
 
-# Podpięcie biblioteki SFML do Twojej gry
+
 target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-window sfml-system)
